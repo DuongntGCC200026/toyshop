@@ -12,13 +12,13 @@
             <h3 class="mt-5">CATEGORIES</h3>
             <div class="list-group list-group-flush">
                 <?php
-                $res = mysqli_query($conn, "SELECT * FROM category");
+                $res = pg_query($conn, "SELECT * FROM public.category");
                 if (!$res) {
-                    die("Invalid query:  " . mysqli_error($conn));
+                    die("Invalid query:  " . pg_errormessage($conn));
                 }
-                while ($row = mysqli_fetch_array($res, MYSQLI_ASSOC)) {
+                while ($row = pg_fetch_array($res)) {
                 ?>
-                    <a href="?page=SearchProduct&&id=<?php echo $row['CategoryID'] ?>" class="list-group-item list-group-item-action py-2"><?php echo $row['CategoryName']; ?></a>
+                    <a href="?page=SearchProduct&&id=<?php echo $row['Cate_ID'] ?>" class="list-group-item list-group-item-action py-2"><?php echo $row['Cate_Name']; ?></a>
                 <?php
                 }
                 ?>
@@ -29,12 +29,12 @@
             <div class="row mt-5">
                 <?php
                 $No = 1; 
-                $res = mysqli_query($conn, "SELECT ProductID, ProductName, CategoryName, SmallDes, Price, Image FROM product a, category b 
+                $res = pg_query($conn, "SELECT ProductID, ProductName, CategoryName, SmallDes, Price, Image FROM product a, category b 
                                                 WHERE a.CategoryID = b.CategoryID");
                 if (!$res) {
-                    die("Invalid query:  " . mysqli_error($conn));
+                    die("Invalid query:  " . pg_errormessage($conn));
                 }
-                while ($row = mysqli_fetch_array($res, MYSQLI_ASSOC)) {
+                while ($row = pg_query($res)) {
                     if ($No <= 6) {
                 ?>
                         <div class="col-lg-4 col-md-6 col-sm-12 mb-5">
