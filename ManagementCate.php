@@ -3,7 +3,7 @@ if (isset($_SESSION['us']) == false) {
     echo "<script>alert('You must LOG-IN')</script>";
     echo '<meta http-equiv="refresh" content="5;URL=?page=Login"/>';
 } else {
-    if (isset($_SESSION['admin']) && $_SESSION['admin'] != 1) {
+    if (isset($_SESSION['admin']) && $_SESSION['admin'] != true) {
         echo "<script>alert('You are not administrator')</script>";
         echo '<meta http-equiv="refresh" content="0;URL=index.php"/>';
     } else {
@@ -22,7 +22,7 @@ if (isset($_SESSION['us']) == false) {
         if (isset($_GET["function"]) == "del") {
             if (isset($_GET["id"])) {
                 $id = $_GET["id"];
-                mysqli_query($conn, "DELETE FROM category WHERE CategoryID = '$id'");
+                pg_query($conn, "DELETE FROM public.category WHERE cate_id = '$id'");
                 echo '<meta http-equiv="refresh" content="0;URL=?page=ManagementCate"/>';
             }
         }
@@ -48,10 +48,8 @@ if (isset($_SESSION['us']) == false) {
                         <table id="tableproduct" class="table table-striped table-bordered" cellspacing="0" width="100%">
                             <thead>
                                 <tr>
-                                    <th><strong>No.</strong></th>
                                     <th><strong>Category ID</strong></th>
                                     <th><strong>Category Name</strong></th>
-                                    <th><strong>Country</strong></th>
                                     <th><strong>Description</strong></th>
                                     <th><strong>Edit</strong></th>
                                     <th><strong>Delete</strong></th>
@@ -62,21 +60,19 @@ if (isset($_SESSION['us']) == false) {
                                 <?php
                                 include_once("Connection.php");
                                 $No = 1;
-                                $result = mysqli_query($conn, "SELECT * FROM category");
-                                while ($row = mysqli_fetch_array($result, MYSQLI_ASSOC)) {
+                                $result = pg_query($conn, "SELECT * FROM public.category");
+                                while ($row = pg_fetch_array($result)) {
                                 ?>
                                     <tr>
-                                        <td><?php echo $No; ?></td>
-                                        <td><?php echo $row["CategoryID"]; ?></td>
-                                        <td><?php echo $row["CategoryName"]; ?></td>
-                                        <td><?php echo $row["Country"]; ?></td>
-                                        <td><?php echo $row["DescriptionCate"]; ?></td>
+                                        <td><?php echo $row["cate_id"]; ?></td>
+                                        <td><?php echo $row["cate_name"]; ?></td>
+                                        <td><?php echo $row["description"]; ?></td>
                                         <td style='text-align:center'>
-                                            <a href="?page=UpdateCate&&id=<?php echo $row["CategoryID"]; ?>">
+                                            <a href="?page=UpdateCate&&id=<?php echo $row["cate_id"]; ?>">
                                                 <img src='Img/edit.png' border='0' /></a>
                                         </td>
                                         <td style='text-align:center'>
-                                            <a href="?page=ManagementCate&&function=del&&id=<?php echo $row["CategoryID"]; ?>" onclick="return deleteConfirm()">
+                                            <a href="?page=ManagementCate&&function=del&&id=<?php echo $row["cate_id"]; ?>" onclick="return deleteConfirm()">
                                                 <img src='Img/delete.png' border='0' /></a>
                                         </td>
                                     </tr>

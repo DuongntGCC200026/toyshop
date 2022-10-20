@@ -2,15 +2,6 @@
     function category() {
         var format = /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]+/;
         var f = document.form1;
-        //id
-        if (f.txtID.value == "") {
-            alert("Enter Category ID!");
-            return false;
-        }
-        if (format.test(f.txtID.value)) {
-            alert("The Category ID does not contain special characters!");
-            return false;
-        }
         //name
         if (f.txtName.value == "") {
             alert("Enter Category Name!");
@@ -18,15 +9,6 @@
         }
         if (format.test(f.txtName.value)) {
             alert("The Category Name does not contain special characters!");
-            return false;
-        }
-        //country
-        if (f.txtCountry.value == "") {
-            alert("Enter Country!");
-            return false;
-        }
-        if (format.test(f.txtCountry.value)) {
-            alert("The Country does not contain special characters!");
             return false;
         }
         //des
@@ -41,7 +23,7 @@ if (isset($_SESSION['us']) == false) {
     echo "<script>alert('You must be LOG-IN')</script>";
     echo '<meta http-equiv="refresh" content="0;URL=?page=Login"/>';
 } else {
-    if (isset($_SESSION['admin']) && $_SESSION['admin'] != 1) {
+    if (isset($_SESSION['admin']) && $_SESSION['admin'] != true) {
         echo "<script>alert('You are not administrator')</script>";
         echo '<meta http-equiv="refresh" content="0;URL=index.php"/>';
     } else {
@@ -63,12 +45,11 @@ if (isset($_SESSION['us']) == false) {
                     include_once("Connection.php");
                     if (isset($_GET["id"])) {
                         $id = $_GET["id"];
-                        $result = mysqli_query($conn, "SELECT * FROM category WHERE CategoryID = '$id'");
-                        $row = mysqli_fetch_array($result, MYSQLI_ASSOC);
-                        $cat_id = $row['CategoryID'];
-                        $cat_name = $row['CategoryName'];
-                        $country = $row['Country'];
-                        $cat_des = $row['DescriptionCate'];
+                        $result = pg_query($conn, "SELECT * FROM public.category WHERE cate_id = '$id'");
+                        $row = pg_fetch_array($result);
+                        $cat_id = $row['cate_id'];
+                        $cat_name = $row['cate_name'];
+                        $cat_des = $row['description'];
                     ?>
                         <h3 class="text-center">Updating Category</h3>
                         <form id="form1" name="form1" method="post" action="" class="form-horizontal" role="form" onsubmit="return category()">
@@ -82,12 +63,6 @@ if (isset($_SESSION['us']) == false) {
                                 <label for="txtName" class="col-sm-2 control-label mt-3">Category Name(*): </label>
                                 <div class="col-sm-12 mt-2">
                                     <input type="text" name="txtName" id="txtName" class="form-control" placeholder="Catepgy Name" value='<?php echo $cat_name;  ?>'>
-                                </div>
-                            </div>
-                            <div class="form-group">
-                                <label for="txtCountry" class="col-sm-2 control-label mt-3">Country(*): </label>
-                                <div class="col-sm-12 mt-2">
-                                    <input type="text" name="txtCountry" id="txtCountry" class="form-control" placeholder="Country" value='<?php echo $country; ?>'>
                                 </div>
                             </div>
                             <div class="form-group">
@@ -109,12 +84,11 @@ if (isset($_SESSION['us']) == false) {
                         if (isset($_POST["btnUpdate"])) {
                             $id = $_POST["txtID"];
                             $name = $_POST["txtName"];
-                            $country = $_POST["txtCountry"];
                             $des = $_POST["txtDes"];
-                            $sq = "SELECT * FROM category WHERE CategoryID != '$id' and CategoryName = '$name'";
-                            $result = mysqli_query($conn, $sq);
-                            if (mysqli_num_rows($result) == 0) {
-                                mysqli_query($conn, "UPDATE category SET CategoryName = '$name', Country= '$country', DescriptionCate ='$des' WHERE CategoryID ='$id'");
+                            $sq = "SELECT * FROM public.category WHERE cate_id != '$id' and cate_name = '$name'";
+                            $result = pg_query($conn, $sq);
+                            if (pg_num_rows($result) == 0) {
+                                pg_query($conn, "UPDATE public.category SET cate_name = '$name', description ='$des' WHERE cate_id ='$id'");
                                 echo "<script>alert('Updating successfully!');</script>";
                                 echo '<meta http-equiv="refresh" content="5; URL=?page=ManagementCate"/>';
                             } else {

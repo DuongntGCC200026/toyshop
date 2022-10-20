@@ -81,6 +81,7 @@
                 </ul>
             </div>
         </nav>
+        
         <?php
         if (isset(($_GET['page']))) {
             $page = $_GET['page'];
@@ -118,7 +119,7 @@
                 include_once("Logout.php");
             }
         } else {
-            include("Content.php");
+            include_once("Content.php");
         }
         ?>
 
@@ -163,7 +164,7 @@
                                 <i class="bi bi-shop"></i>&nbsp;TD - SHOP
                             </h6>
                             <p>
-                                The most prestigious perfume selling website in Vietnam.
+                                The most prestigious toys selling website in Vietnam.
                             </p>
                         </div>
                         <!-- Grid column -->
@@ -190,14 +191,14 @@
                                 Category
                             </h6>
                             <?php
-                            $res = mysqli_query($conn, "SELECT * FROM category");
+                            $res = pg_query($conn, "SELECT * FROM public.category");
                             if (!$res) {
-                                die("Invalid query:  " . mysqli_error($conn));
+                                die("Invalid query:  " . pg_errormessage($conn));
                             }
-                            while ($row = mysqli_fetch_array($res, MYSQLI_ASSOC)) {
+                            while ($row = pg_fetch_array($res)) {
                             ?>
                                 <p>
-                                    <a href="?page=SearchProduct&&id=<?php echo $row['CategoryID'] ?>" class="text-reset"><?php echo $row['CategoryName']; ?></a>
+                                    <a href="?page=SearchProduct&&id=<?php echo $row['cate_id'] ?>" class="text-reset"><?php echo $row['cate_name']; ?></a>
                                 </p>
                             <?php
                             }

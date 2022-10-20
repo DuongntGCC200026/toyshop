@@ -2,15 +2,6 @@
     function Cate() {
         var format = /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]+/;
         var f = document.form1;
-        //id
-        if (f.txtID.value == "") {
-            alert("Enter Category ID!");
-            return false;
-        }
-        if (format.test(f.txtID.value)) {
-            alert("The Category ID does not contain special characters!");
-            return false;
-        }
         //name
         if (f.txtName.value == "") {
             alert("Enter Category Name!");
@@ -18,15 +9,6 @@
         }
         if (format.test(f.txtName.value)) {
             alert("The Category Name does not contain special characters!");
-            return false;
-        }
-        //country
-        if (f.txtCountry.value == "") {
-            alert("Enter Country!");
-            return false;
-        }
-        if (format.test(f.txtCountry.value)) {
-            alert("The Country does not contain special characters!");
             return false;
         }
         //des
@@ -41,7 +23,7 @@ if (isset($_SESSION['us']) == false) {
     echo "<script>alert('You must LOG-IN')</script>";
     echo '<meta http-equiv="refresh" content="0;URL=?page=Login"/>';
 } else {
-    if (isset($_SESSION['admin']) && $_SESSION['admin'] != 1) {
+    if (isset($_SESSION['admin']) && $_SESSION['admin'] != true) {
         echo "<script>alert('You are not administrator')</script>";
         echo '<meta http-equiv="refresh" content="0;URL=index.php"/>';
     } else {
@@ -49,19 +31,17 @@ if (isset($_SESSION['us']) == false) {
         <?php
         include_once("Connection.php");
         if (isset($_POST["btnAdd"])) {
-            $id = $_POST["txtID"];
             $name = $_POST["txtName"];
-            $country = $_POST["txtCountry"];
             $des = $_POST["txtDes"];
             
-            $sq = "SELECT * FROM category WHERE CategoryID = '$id' or CategoryName = '$name'";
-            $result = mysqli_query($conn, $sq);
-            if (mysqli_num_rows($result) == 0) {
-                mysqli_query($conn, "INSERT INTO category (CategoryID, CategoryName, Country, DescriptionCate) VALUES ('$id','$name', '$country','$des')");
+            $sq = "SELECT * FROM public.category WHERE cate_name = '$name'";
+            $result = pg_query($conn, $sq);
+            if (pg_num_rows($result) == 0) {
+                pg_query($conn, "INSERT INTO category (cate_name, description) VALUES ('$name','$des')");
                 echo "<script>alert('Adding successfully!');</script>";
                 echo '<meta http-equiv= "refresh" content="0;URL=?page=ManagementCate"/>';
             } else {
-                echo "<script>alert('Duplicate category ID or Name!');</script>";
+                echo "<script>alert('Duplicate category name!');</script>";
             }
         }
         ?>
@@ -81,18 +61,8 @@ if (isset($_SESSION['us']) == false) {
                     <h3 class="text-center">Adding new Category</h3>
                     <form id="form1" name="form1" method="post" action="" class="form-horizontal" role="form" onsubmit="return Cate()">
                         <div class="form-group">
-                            <div class="col-sm-12 mt-5">
-                                <input type="text" name="txtID" id="txtID" class="form-control" placeholder="Category ID">
-                            </div>
-                        </div>
-                        <div class="form-group">
                             <div class="col-sm-12 mt-3">
                                 <input type="text" name="txtName" id="txtName" class="form-control" placeholder="Category Name">
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <div class="col-sm-12 mt-3">
-                                <input type="text" name="txtCountry" id="txtCountry" class="form-control" placeholder="Country">
                             </div>
                         </div>
                         <div class="form-group">
