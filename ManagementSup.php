@@ -22,8 +22,8 @@ if (isset($_SESSION['us']) == false) {
         if (isset($_GET["function"]) == "del") {
             if (isset($_GET["id"])) {
                 $id = $_GET["id"];
-                pg_query($conn, "DELETE FROM public.category WHERE cate_id = '$id'");
-                echo '<meta http-equiv="refresh" content="0;URL=?page=ManagementCate"/>';
+                pg_query($conn, "DELETE FROM public.supplier WHERE sup_id = '$id'");
+                echo '<meta http-equiv="refresh" content="0;URL=?page=ManagementSup"/>';
             }
         }
         ?>
@@ -42,17 +42,18 @@ if (isset($_SESSION['us']) == false) {
                 </div>
                 <div class="col-sm-9">
                     <form name="frm" method="post" action="">
-                        <h3 class="text-center">CATEGORIES MANAGEMENT</h3>
+                        <h3 class="text-center">SUPPLIERS MANAGEMENT</h3>
                         <p>
-                            <a href="?page=AddCategory" class="text-decoration-none">
+                            <a href="?page=AddSup" class="text-decoration-none">
                                 <img src="Img/add.png" alt="Add new" width="16" height="16" border="0" /> Add new</a>
                         </p>
                         <table id="tableproduct" class="table table-striped table-bordered" cellspacing="0" width="100%">
                             <thead>
                                 <tr>
-                                    <th><strong>Category ID</strong></th>
-                                    <th><strong>Category Name</strong></th>
-                                    <th><strong>Description</strong></th>
+                                    <th><strong>Supplier ID</strong></th>
+                                    <th><strong>Supplier Name</strong></th>
+                                    <th><strong>Address</strong></th>
+                                    <th><strong>Mail</strong></th>
                                     <th><strong>Edit</strong></th>
                                     <th><strong>Delete</strong></th>
                                 </tr>
@@ -62,19 +63,20 @@ if (isset($_SESSION['us']) == false) {
                                 <?php
                                 include_once("Connection.php");
                                 $No = 1;
-                                $result = pg_query($conn, "SELECT * FROM public.category");
+                                $result = pg_query($conn, "SELECT * FROM public.supplier");
                                 while ($row = pg_fetch_array($result)) {
                                 ?>
                                     <tr>
-                                        <td><?php echo $row["cate_id"]; ?></td>
-                                        <td><?php echo $row["cate_name"]; ?></td>
-                                        <td><?php echo $row["description"]; ?></td>
+                                        <td><?php echo $row["sup_id"]; ?></td>
+                                        <td><?php echo $row["sup_name"]; ?></td>
+                                        <td><?php echo $row["sup_address"]; ?></td>
+                                        <td><?php echo $row["sup_mail"]; ?></td>
                                         <td style='text-align:center'>
-                                            <a href="?page=UpdateCate&&id=<?php echo $row["cate_id"]; ?>">
+                                            <a href="?page=UpdateSup&&id=<?php echo $row["sup_id"]; ?>">
                                                 <img src='Img/edit.png' border='0' /></a>
                                         </td>
                                         <td style='text-align:center'>
-                                            <a href="?page=ManagementCate&&function=del&&id=<?php echo $row["cate_id"]; ?>" onclick="return deleteConfirm()">
+                                            <a href="?page=ManagementSup&&function=del&&id=<?php echo $row["sup_id"]; ?>" onclick="return deleteConfirm()">
                                                 <img src='Img/delete.png' border='0' /></a>
                                         </td>
                                     </tr>

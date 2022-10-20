@@ -39,6 +39,8 @@ if (isset($_SESSION['us']) == false) {
                     <h3>MANAGEMENT</h3>
                     <div class="list-group list-group-flush">
                         <a href="?page=ManagementCate" class="list-group-item list-group-item-action py-2">CATEGORY</a>
+                        <a href="?page=ManagementSup" class="list-group-item list-group-item-action py-2">SUPPLIER</a>
+                        <a href="?page=ManagementShop" class="list-group-item list-group-item-action py-2">SHOP</a>
                         <a href="?page=ManagementPro" class="list-group-item list-group-item-action py-2">PRODUCT</a>
                     </div>
                     <hr class="d-sm-none">

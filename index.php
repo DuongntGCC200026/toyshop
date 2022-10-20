@@ -93,12 +93,24 @@
                 include_once("ManagementPro.php");
             } elseif ($page == "ManagementCate") {
                 include_once("ManagementCate.php");
+            } elseif ($page == "ManagementSup") {
+                include_once("ManagementSup.php");
+            } elseif ($page == "AddSup") {
+                include_once("AddSupplier.php");
+            } elseif ($page == "ManagementShop") {
+                include_once("ManagementShop.php");
+            } elseif ($page == "AddShop") {
+                include_once("AddShop.php");
             } elseif ($page == "logout") {
                 include_once("Logout.php");
             } elseif ($page == "AddCategory") {
                 include_once("AddCategory.php");
             } elseif ($page == "UpdateCate") {
                 include_once("UpdateCate.php");
+            } elseif ($page == "UpdateSup") {
+                include_once("UpdateSupplier.php");
+            } elseif ($page == "UpdateShop") {
+                include_once("UpdateShop.php");
             } elseif ($page == "AddProduct") {
                 include_once("AddProduct.php");
             } elseif ($page == "UpdatePro") {
