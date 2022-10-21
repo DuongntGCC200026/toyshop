@@ -3,7 +3,7 @@ if (isset($_SESSION['us']) == false) {
     echo "<script>alert('You must LOG-IN')</script>";
     echo '<meta http-equiv="refresh" content="0;URL=?page=Login"/>';
 } else {
-    if (isset($_SESSION['admin']) && $_SESSION['admin'] != 1) {
+    if (isset($_SESSION['admin']) && $_SESSION['admin'] != true) {
         echo "<script>alert('You are not administrator')</script>";
         echo '<meta http-equiv="refresh" content="0;URL=index.php"/>';
     } else {
@@ -23,12 +23,12 @@ if (isset($_SESSION['us']) == false) {
         if (isset($_GET["function"]) == "del") {
             if (isset($_GET["id"])) {
                 $id = $_GET["id"];
-                $sq = "SELECT Image FROM product WHERE ProductID = '$id'";
-                $res = mysqli_query($conn, $sq);
-                $row = mysqli_fetch_array($res, MYSQLI_ASSOC);
-                $filePic = $row['Image'];
+                $sq = "SELECT img FROM public.product WHERE pro_id = '$id'";
+                $res = pg_query($conn, $sq);
+                $row = pg_fetch_array($res);
+                $filePic = $row['img'];
                 unlink("Images/" . $filePic);
-                mysqli_query($conn, "DELETE FROM product WHERE ProductID = '$id'");
+                pg_query($conn, "DELETE FROM product WHERE pro_id = '$id'");
                 echo '<meta http-equiv="refresh" content="0;URL=?page=ManagementPro"/>';
             }
         }
@@ -56,13 +56,14 @@ if (isset($_SESSION['us']) == false) {
                         <table id="tableproduct" class="table table-striped table-bordered" cellspacing="0" width="100%">
                             <thead>
                                 <tr>
-                                    <th><strong>No.</strong></th>
-                                    <th><strong>Product ID</strong></th>
-                                    <th><strong>Product Name</strong></th>
+                                    <th><strong>ProductID</strong></th>
+                                    <th><strong>Name</strong></th>
                                     <th><strong>Price</strong></th>
                                     <th><strong>Quantity</strong></th>
                                     <th><strong>Category</strong></th>
-                                    <th><strong>Product For</strong></th>
+                                    <th><strong>Supplier</strong></th>
+                                    <th><strong>Shop</strong></th>
+                                    <th><strong>Description</strong></th>
                                     <th><strong>Image</strong></th>
                                     <th><strong>Edit</strong></th>
                                     <th><strong>Delete</strong></th>
@@ -73,27 +74,28 @@ if (isset($_SESSION['us']) == false) {
                                 <?php
                                 include_once("Connection.php");
                                 $No = 1;
-                                $result = mysqli_query($conn, "SELECT ProductID, ProductName, Price, Quantity, CategoryName, SmallDes, Image 
-                                                        FROM product a, category b WHERE a.CategoryID=b.CategoryID ORDER BY ProDate DESC");
-                                while ($row = mysqli_fetch_array($result, MYSQLI_ASSOC)) {
+                                $result = pg_query($conn, "SELECT * FROM product a, supplier b, category d, shop s 
+                                                    WHERE a.sup_id = b.sup_id AND a.cate_id = d.cate_id AND a.shop_id = s.shop_id");
+                                while ($row = pg_fetch_array($result)) {
                                 ?>
                                     <tr>
-                                        <td><?php echo $No;  ?></td>
-                                        <td><?php echo $row["ProductID"]; ?></td>
-                                        <td><?php echo $row["ProductName"]; ?></td>
-                                        <td><?php echo $row["Price"]; ?></td>
-                                        <td><?php echo $row["Quantity"]; ?></td>
-                                        <td><?php echo $row["CategoryName"]; ?></td>
-                                        <td><?php echo $row["SmallDes"]; ?></td>
+                                        <td><?php echo $row["pro_id"]; ?></td>
+                                        <td><?php echo $row["pro_name"]; ?></td>
+                                        <td><?php echo $row["price"]; ?></td>
+                                        <td><?php echo $row["quatity"]; ?></td>
+                                        <td><?php echo $row["cate_name"]; ?></td>
+                                        <td><?php echo $row["sup_name"]; ?></td>
+                                        <td><?php echo $row["shop_name"]; ?></td>
+                                        <td><?php echo $row["descrip"]; ?></td>
                                         <td align='center'>
-                                            <img src='Images/<?php echo $row['Image'] ?>' border='0' width="50" height="50" />
+                                            <img src='Images/<?php echo $row['img'] ?>' border='0' width="50" height="50" />
                                         </td>
                                         <td align='center'>
-                                            <a href="?page=UpdatePro&&id=<?php echo $row["ProductID"]; ?>">
+                                            <a href="?page=UpdatePro&&id=<?php echo $row["pro_id"]; ?>">
                                                 <img src='Img/edit.png' border='0' /></a>
                                         </td>
                                         <td align='center'>
-                                            <a href="?page=ManagementPro&&function=del&&id=<?php echo $row["ProductID"]; ?>" onclick="return deleteConfirm()">
+                                            <a href="?page=ManagementPro&&function=del&&id=<?php echo $row["pro_id"]; ?>" onclick="return deleteConfirm()">
                                                 <img src='Img/delete.png' border='0' /></a>
                                         </td>
                                     </tr>

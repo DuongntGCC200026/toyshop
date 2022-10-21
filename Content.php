@@ -18,7 +18,7 @@
                 }
                 while ($row = pg_fetch_array($res)) {
                 ?>
-                    <a href="?page=SearchProduct&&id=<?php echo $row['Cate_ID'] ?>" class="list-group-item list-group-item-action py-2"><?php echo $row['Cate_Name']; ?></a>
+                    <a href="?page=SearchProduct&&id=<?php echo $row['cate_id'] ?>" class="list-group-item list-group-item-action py-2"><?php echo $row['cate_name']; ?></a>
                 <?php
                 }
                 ?>

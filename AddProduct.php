@@ -4,15 +4,6 @@
         var validname = /^[A-Za-z]+|(\s)$/;
         var format = /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]+/;
         f = document.frmProduct;
-        //id
-        if (f.txtID.value == "") {
-            alert("Enter Product ID please!");
-            return false;
-        }
-        if (format.test(f.txtID.value)) {
-            alert("The Product ID does not contain special characters!");
-            return false;
-        }
         //name
         if (f.txtName.value == "") {
             alert("Enter Product Name please!");
@@ -23,8 +14,16 @@
             return false;
         }
         //cate
+        if (f.SupplierList.value == "0") {
+            alert("Choose Supplier Name please!");
+            return false;
+        }
         if (f.CategoryList.value == "0") {
             alert("Choose Category Name please!");
+            return false;
+        }
+        if (f.ShopList.value == "0") {
+            alert("Choose Shop Name please!");
             return false;
         }
         //
@@ -59,7 +58,7 @@ if (isset($_SESSION['us']) == false) {
     echo "<script>alert('You must LOG-IN')</script>";
     echo '<meta http-equiv="refresh" content="0;URL=?page=Login"/>';
 } else {
-    if (isset($_SESSION['admin']) && $_SESSION['admin'] != 1) {
+    if (isset($_SESSION['admin']) && $_SESSION['admin'] != true) {
         echo "<script>alert('You are not administrator')</script>";
         echo '<meta http-equiv="refresh" content="0;URL=index.php"/>';
     } else {
@@ -68,39 +67,60 @@ if (isset($_SESSION['us']) == false) {
         include_once("Connection.php");
         function bind_Category_List($conn)
         {
-            $sqlstring = "SELECT CategoryID, CategoryName FROM category";
-            $result = mysqli_query($conn, $sqlstring);
+            $sqlstring = "SELECT * FROM public.category";
+            $result = pg_query($conn, $sqlstring);
             echo "<select name= 'CategoryList' class='form-control'>
-				<option value = '0'>Choose category</option>";
-            while ($row = mysqli_fetch_array($result, MYSQLI_ASSOC)) {
-                echo "<option value ='" . $row['CategoryID'] . "'>" . $row['CategoryName'] . "</option>";
+				<option value = '0'>Choose Category</option>";
+            while ($row = pg_fetch_array($result)) {
+                echo "<option value ='" . $row['cate_id'] . "'>" . $row['cate_name'] . "</option>";
+            }
+            echo "</select>";
+        }
+        function bind_Sup_List($conn)
+        {
+            $sqlstring = "SELECT * FROM public.supplier";
+            $result = pg_query($conn, $sqlstring);
+            echo "<select name= 'SupplierList' class='form-control'>
+				<option value = '0'>Choose Supplier</option>";
+            while ($row = pg_fetch_array($result)) {
+                echo "<option value ='" . $row['sup_id'] . "'>" . $row['sup_name'] . "</option>";
+            }
+            echo "</select>";
+        }
+        function bind_Shop_List($conn)
+        {
+            $sqlstring = "SELECT * FROM public.shop";
+            $result = pg_query($conn, $sqlstring);
+            echo "<select name= 'ShopList' class='form-control'>
+				<option value = '0'>Choose Shop</option>";
+            while ($row = pg_fetch_array($result)) {
+                echo "<option value ='" . $row['shop_id'] . "'>" . $row['shop_name'] . "</option>";
             }
             echo "</select>";
         }
         if (isset($_POST["btnAdd"])) {
-            $id = $_POST["txtID"];
             $proname = $_POST["txtName"];
-            $short = $_POST["txtShort"];
-            $detail = $_POST["txtDetail"];
+            $des = $_POST["txtDetail"];
             $price = $_POST["txtPrice"];
             $qty = $_POST["txtQty"];
             $pic = $_FILES["txtImage"];
             $category = $_POST["CategoryList"];
+            $sup = $_POST["SupplierList"];
+            $shop = $_POST["ShopList"];
 
             if (
                 $pic['type'] == "image/jpg" || $pic['type'] == "image/jpeg" || $pic['type'] == "image/png"
                 || $pic['type'] == "image/gif"
             ) {
                 if ($pic['size'] <= 614400) {
-                    $sq = "SELECT * FROM product WHERE ProductID ='$id' or ProductName = '$proname'";
-                    $result = mysqli_query($conn, $sq);
-                    if (mysqli_num_rows($result) == 0) {
+                    $sq = "SELECT * FROM public.product WHERE pro_name = '$proname'";
+                    $result = pg_query($conn, $sq);
+                    if (pg_num_rows($result) == 0) {
                         copy($pic['tmp_name'], "Images/" . $pic['name']);
                         $filePic = $pic['name'];
-                        $sqlstring = "INSERT INTO product (
-							ProductID, ProductName, CategoryID, Price, Quantity, Image, SmallDes, DetailDes, ProDate) 
-                            VALUES	('$id','$proname','$category','$price',$qty,'$filePic','$short','$detail','" . date('Y-m-d H:i:s') . "')";
-                        mysqli_query($conn, $sqlstring);
+                        $sqlstring = "INSERT INTO product (pro_name,quatity,price,img,descrip,sup_id,cate_id,shop_id) 
+                            VALUES	                      ('$proname',$qty,$price,'$filePic','$des','$sup','$category','$shop')";
+                        pg_query($conn, $sqlstring);
                         echo "<script>alert('Adding new product successfully!');</script>";
                         echo '<meta http-equiv="refresh" content = "0, URL=?page=ManagementPro"/>';
                     } else {
@@ -132,15 +152,17 @@ if (isset($_SESSION['us']) == false) {
 
                     <form id="frmProduct" name="frmProduct" method="post" enctype="multipart/form-data" action="" class="form-horizontal" role="form" onsubmit="return Product()">
                         <div class="form-group">
-                            <div class="col-sm-12 mt-5">
-                                <input type="text" name="txtID" id="txtID" class="form-control" placeholder="Product ID" value='' />
-                            </div>
-                        </div>
-                        <div class="form-group">
                             <div class="col-sm-12 mt-3">
                                 <input type="text" name="txtName" id="txtName" class="form-control" placeholder="Product Name" value='' />
                             </div>
                         </div>
+
+                        <div class="form-group">
+                            <div class="col-sm-12 mt-3">
+                                <?php bind_Sup_List($conn); ?>
+                            </div>
+                        </div>
+
                         <div class="form-group">
                             <div class="col-sm-12 mt-3">
                                 <?php bind_Category_List($conn); ?>
@@ -149,13 +171,19 @@ if (isset($_SESSION['us']) == false) {
 
                         <div class="form-group">
                             <div class="col-sm-12 mt-3">
-                                <input type="number" name="txtPrice" id="txtPrice" min="1" class="form-control" placeholder="Price"/>
+                                <?php bind_Shop_List($conn); ?>
                             </div>
                         </div>
 
                         <div class="form-group">
                             <div class="col-sm-12 mt-3">
-                                <input type="text" name="txtShort" id="txtShort" class="form-control" placeholder="Short description" value='' />
+                                <input type="number" name="txtQty" id="txtQty" min="1" class="form-control" placeholder="Quantity" />
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <div class="col-sm-12 mt-3">
+                                <input type="number" name="txtPrice" id="txtPrice" min="1" class="form-control" placeholder="Price" />
                             </div>
                         </div>
 
@@ -185,12 +213,6 @@ if (isset($_SESSION['us']) == false) {
                                     });
                                 </script>
 
-                            </div>
-                        </div>
-
-                        <div class="form-group">
-                            <div class="col-sm-12 mt-3">
-                                <input type="number" name="txtQty" id="txtQty" min="1" class="form-control" placeholder="Quantity"/>
                             </div>
                         </div>
 
