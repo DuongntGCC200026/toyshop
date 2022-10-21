@@ -119,7 +119,7 @@ if (isset($_SESSION['us']) == false) {
                         copy($pic['tmp_name'], "Images/" . $pic['name']);
                         $filePic = $pic['name'];
                         $sqlstring = "INSERT INTO product (pro_name,quatity,price,img,descrip,sup_id,cate_id,shop_id) 
-                            VALUES	                      ('$proname',$qty,$price,'$filePic','$des','$sup','$category','$shop')";
+                            VALUES ('$proname',$qty,$price,'$filePic','$des','$sup','$category','$shop')";
                         pg_query($conn, $sqlstring);
                         echo "<script>alert('Adding new product successfully!');</script>";
                         echo '<meta http-equiv="refresh" content = "0, URL=?page=ManagementPro"/>';
