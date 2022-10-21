@@ -32,23 +32,20 @@
 </script>
 <?php
 include_once("Connection.php");
-$query = "SELECT Cusname, Identitycard, Cusphone, Address 
-                FROM customer WHERE Username = '" . $_SESSION["us"] . "'";
-$result = mysqli_query($conn, $query) or die(mysqli_error($conn));
-$row = mysqli_fetch_array($result, MYSQLI_ASSOC);
+$query = "SELECT * FROM customer WHERE username = '" . $_SESSION["us"] . "'";
+$result = pg_query($conn, $query) or die(pg_errormessage($conn));
+$row = pg_fetch_array($result);
 
 $us = $_SESSION["us"];
-$name = $row["Cusname"];
-$iden = $row["Identitycard"];
-$phone = $row["Cusphone"];
-$address = $row["Address"];
+$full = $row["cus_name"];
+$phone = $row["cus_phone"];
+$address = $row["cus_address"];
 
 if (isset($_POST['btnUpdate'])) {
     $crupass = $_POST["txtCurPass"];
     $passnew = $_POST["txtPass"];
     $repass = $_POST['txtRepass'];
-    $name = $_POST["txtCusname"];
-    $iden = $_POST["txtIdentitycard"];
+    $full = $_POST["txtCusname"];
     $phone = $_POST["txtCusphone"];
     $address = $_POST["txtAddress"];
 
@@ -56,24 +53,23 @@ if (isset($_POST['btnUpdate'])) {
         if ($passnew == "" || $repass == "") {
             echo "<script>alert('New password and confirm passwrod can not be blank!')</script>";
         } elseif ($passnew == $repass) {
-            $sql = "SELECT Password FROM customer WHERE Username = '" . $_SESSION["us"] . "'";
-            $res = mysqli_query($conn, $sql) or die(mysqli_error($conn));
-            $rows = mysqli_fetch_array($res, MYSQLI_ASSOC);
-            $oldpass = $rows["Password"];
+            $sql = "SELECT * FROM customer WHERE username = '" . $_SESSION["us"] . "'";
+            $res = pg_query($conn, $sql) or die(pg_errormessage($conn));
+            $rows = pg_fetch_array($res);
+            $oldpass = $rows["password"];
             $tempPass = md5($crupass);
 
             if ($oldpass == $tempPass) {
                 $pa = md5($passnew);
                 $sq = "UPDATE customer
                 SET Password = '$pa',
-                    Cusname = '$name',
-                    Identitycard = '$iden',
-                    Cusphone = '$phone',
-                    Address = '$address'
-                WHERE Username ='" . $_SESSION['us'] . "'";
-                mysqli_query($conn, $sq) or die(mysqli_error($conn));
+                    cus_name = '$full',
+                    cus_phone = '$phone',
+                    cus_ddress = '$address'
+                WHERE username ='" . $_SESSION['us'] . "'";
+                pg_query($conn, $sq) or die(pg_errormessage($conn));
                 echo "<script>alert('Updating successfully!')</script>";
-                echo '<meta http-equiv="refresh" content="5;URL=index.php"';
+                echo '<meta http-equiv="refresh" content="0;URL=index.php"';
             } else {
                 echo "<script>alert('Current password incorrect!')</script>";
             }
@@ -82,12 +78,11 @@ if (isset($_POST['btnUpdate'])) {
         }
     } else {
         $sq = "UPDATE customer
-                    SET Cusname = '$name',
-                        Identitycard = '$iden',
-                        Cusphone = '$phone',
-                        Address = '$address'
-            WHERE Username ='" . $_SESSION['us'] . "'";
-        mysqli_query($conn, $sq) or die(mysqli_error($conn));
+                    SET cus_name = '$full',
+                        cus_phone = '$phone',
+                        cus_address = '$address'
+            WHERE username ='" . $_SESSION['us'] . "'";
+        pg_query($conn, $sq) or die(pg_errormessage($conn));
         echo "<script>alert('Updating successfully!')</script>";
         echo '<meta http-equiv="refresh" content="0;URL=index.php"';
     }
@@ -110,7 +105,7 @@ if (isset($_POST['btnUpdate'])) {
             <form id="form1" name="form1" method="post" action="" class="form-horizontal" role="form" onsubmit="return Checking()">
                 <div class="form-group">
                     <div class="col-sm-12 mt-5">
-                        <input type="text" name="txtCusname" id="txtCusname" class="form-control" placeholder="Category ID" value='<?php echo $name; ?>'>
+                        <input type="text" name="txtCusname" id="txtCusname" class="form-control" placeholder="Category ID" value='<?php echo $full; ?>'>
                     </div>
                 </div>
                 <div class="form-group">
@@ -126,11 +121,6 @@ if (isset($_POST['btnUpdate'])) {
                 <div class="form-group">
                     <div class="col-sm-12 mt-3">
                         <input type="password" name="txtRepass" id="txtRepass" class="form-control" placeholder="Confirm password">
-                    </div>
-                </div>
-                <div class="form-group">
-                    <div class="col-sm-12 mt-3">
-                        <input type="text" name="txtIdentitycard" id="txtIdentitycard" class="form-control" placeholder="Category Name" value='<?php echo $iden; ?>'>
                     </div>
                 </div>
                 <div class="form-group">
