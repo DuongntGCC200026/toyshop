@@ -1,11 +1,20 @@
 <div class="container">
     <div class="row">
         <div class="col-sm-3">
-            <h3 class=" mt-5">PRODUCTS</h3>
+            <h3 class=" mt-5">SUPPLIERS</h3>
             <div class="list-group list-group-flush">
-                <a href="index.php" class="list-group-item list-group-item-action py-2">All</a>
-                <a href="?page=SearchProduct&&gender=man" class="list-group-item list-group-item-action py-2">MAN</a>
-                <a href="?page=SearchProduct&&gender=woman" class="list-group-item list-group-item-action py-2">WOMAN</a>
+                <a href="index.php" class="list-group-item list-group-item-action py-2">ALL</a>
+                <?php
+                $res = pg_query($conn, "SELECT * FROM public.supplier");
+                if (!$res) {
+                    die("Invalid query:  " . pg_errormessage($conn));
+                }
+                while ($row = pg_fetch_array($res)) {
+                ?>
+                    <a href="?page=SearchProduct&&sup_id=<?php echo $row['sup_id'] ?>" class="list-group-item list-group-item-action py-2 text-uppercase" ><?php echo $row['sup_name']; ?></a>
+                <?php
+                }
+                ?>
             </div>
             <hr class="d-sm-none">
 
@@ -18,7 +27,7 @@
                 }
                 while ($row = pg_fetch_array($res)) {
                 ?>
-                    <a href="?page=SearchProduct&&id=<?php echo $row['cate_id'] ?>" class="list-group-item list-group-item-action py-2"><?php echo $row['cate_name']; ?></a>
+                    <a href="?page=SearchProduct&&cate_id=<?php echo $row['cate_id'] ?>" class="list-group-item list-group-item-action py-2 text-uppercase"><?php echo $row['cate_name']; ?></a>
                 <?php
                 }
                 ?>
@@ -28,32 +37,32 @@
         <div class="col-sm-9">
             <div class="row mt-5">
                 <?php
-                $No = 1; 
-                $res = pg_query($conn, "SELECT ProductID, ProductName, CategoryName, SmallDes, Price, Image FROM product a, category b 
-                                                WHERE a.CategoryID = b.CategoryID");
+                $No = 1;
+                $res = pg_query($conn, "SELECT * FROM product a, supplier b, category d
+                                                    WHERE a.sup_id = b.sup_id AND a.cate_id = d.cate_id");
                 if (!$res) {
                     die("Invalid query:  " . pg_errormessage($conn));
                 }
-                while ($row = pg_query($res)) {
-                    if ($No <= 6) {
+                while ($row = pg_fetch_array($res)) {
+                    if ($No <= 18) {
                 ?>
                         <div class="col-lg-4 col-md-6 col-sm-12 mb-5">
                             <div class='container-fluid'>
                                 <div class=" mx-auto col-md-6 col-10" id="card" style="background-color: white;">
-                                    <img class='mx-auto' id="img-thumbnail" src="Images/<?php echo $row['Image'] ?>" width="200px" height="250px" />
+                                    <img class='mx-auto' id="img-thumbnail" src="Images/<?php echo $row['img'] ?>" width="200px" height="250px" />
                                     <div class=" text-center mx-auto" id="card-body">
                                         <div class='cvp'>
-                                            <h5 class="card-title font-weight-bold mt-3"><?php echo $row['ProductName'] ?></h5>
-                                            <p class="card-text"><?php echo $row['Price'] ?>$</p>
-                                            <a href="?page=ViewPro&&id=<?php echo $row['ProductID']; ?>" class="btn px-auto" id="details">view details</a><br />
+                                            <h5 class="card-title font-weight-bold mt-3 text-uppercase"><?php echo $row['pro_name'] ?></h5>
+                                            <p class="card-text"><?php echo $row['price'] ?>$</p>
+                                            <a href="?page=ViewPro&&id=<?php echo $row['pro_id']; ?>" class="btn px-auto" id="details">view details</a><br />
                                             <form action="?page=PersonalCart" method="POST">
                                                 <input type="hidden" name="Quantity" value="1">
                                                 <input class="btn px-auto" id="cart" type="submit" name="AddCart" value="ADD TO CART">
-                                                <input type="hidden" name="ProName" value="<?php echo $row['ProductName'] ?>">
-                                                <input type="hidden" name="CateName" value="<?php echo $row['CategoryName'] ?>">
-                                                <input type="hidden" name="Gender" value="<?php echo $row['SmallDes'] ?>">
-                                                <input type="hidden" name="Price" value="<?php echo $row['Price'] ?>">
-                                                <input type="hidden" name="Img" value="<?php echo $row['Image'] ?>">
+                                                <input type="hidden" name="ProName" value="<?php echo $row['pro_name'] ?>">
+                                                <input type="hidden" name="CateName" value="<?php echo $row['cate_name'] ?>"> 
+                                                <input type="hidden" name="SupName" value="<?php echo $row['sup_name'] ?>">
+                                                <input type="hidden" name="Price" value="<?php echo $row['price'] ?>">
+                                                <input type="hidden" name="Img" value="<?php echo $row['img'] ?>">
                                             </form>
                                         </div>
                                     </div>

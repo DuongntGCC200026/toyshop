@@ -8,14 +8,8 @@
     var pas1 = document.register.txtPass.value;
     var pas2 = document.register.txtRepass.value;
     var name = document.register.txtCusname.value;
-    var ident = document.register.txtIdentitycard.value;
     var phone = document.register.txtPhone.value;
     var address = document.register.txtAddress.value;
-
-    if (us == "" || pas1 == "" || pas2 == "" || ident == "" || phone == "" || address == "") {
-      alert("Please fill out the form!");
-      return false;
-    }
     //us
     if (format.test(us)) {
       alert("The username does not contain special characters!");
@@ -39,18 +33,14 @@
       alert("The fullname does not contain special characters or number!");
       return false;
     }
-    //identity
-    if (format.test(ident)) {
-      alert("The identity card does not contain special characters!");
-      return false;
-    }
-    if (isNaN(ident)) {
-      alert("The identity card does not contain characters!");
-      return false;
-    }
     //phone
     if (phone_pattern.test(f.txtPhone.value) == false) {
       alert("The phone number is invalid!");
+      return false;
+    }
+
+    if (us == "" || pas1 == "" || pas2 == "" || ident == "" || phone == "" || address == "") {
+      alert("Please fill out the form!");
       return false;
     }
   }
@@ -67,7 +57,6 @@ if (isset($_POST['btnRegister'])) {
   $pa = $_POST['txtPass'];
   $repa = $_POST['txtRepass'];
   $cusname = $_POST['txtCusname'];
-  $identitycard = $_POST['txtIdentitycard'];
   $phone = $_POST['txtPhone'];
   $address = $_POST['txtAddress'];
 
@@ -78,11 +67,11 @@ if (isset($_POST['btnRegister'])) {
   } else {
     include_once("Connection.php");
     $pass = md5($pa);
-    $sq = "SELECT * FROM customer WHERE Username = '$us'";
-    $res = mysqli_query($conn, $sq);
-    if (mysqli_num_rows($res) == 0) {
-      mysqli_query($conn, "INSERT INTO customer(Username, Password, Cusname, Identitycard, Cusphone, Address, State) 
-                Values ('$us','$pass','$cusname','$identitycard', '$phone','$address', 0)") or die(mysqli_error($conn));
+    $sq = "SELECT * FROM public.customer WHERE username = '$us'";
+    $res = pg_query($conn, $sq);
+    if (pg_num_rows($res) == 0) {
+      pg_query($conn, "INSERT INTO customer (username, password, cus_name, cus_phone, cus_address, role) 
+                VALUES ('$us','$pass','$cusname', '$phone','$address', false)") or die(pg_errormessage($conn));
       echo '<meta http-equiv="refresh" content = "0; URL=?page=Login"/>';
       echo "<script>alert('Register successfully!');</script>";
     } else {
@@ -128,10 +117,6 @@ if (isset($_POST['btnRegister'])) {
                   </div>
 
                   <div class="form-outline mb-3">
-                    <input type="text" name="txtIdentitycard" class="form-control form-control-lg" placeholder="Identity card" />
-                  </div>
-
-                  <div class="form-outline mb-3">
                     <input type="text" name="txtPhone" class="form-control form-control-lg" placeholder="Phone number" />
                   </div>
 
@@ -140,7 +125,7 @@ if (isset($_POST['btnRegister'])) {
                   </div>
 
                   <div class="pt-1 mb-4">
-                    <button type="Submit" class="btn btn-dark btn-lg btn-block" id="btnRegisterF" name="btnRegister">Register</button>
+                    <button type="Submit" class="btn btn-dark btn-lg btn-block" id="btnRegister" name="btnRegister">Register</button>
                   </div>
 
                   <p class="mt-2 mb-5 pb-lg-2">Already have an available account? &nbsp;<a href="?page=Login" id="small">Login now</a></p>

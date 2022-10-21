@@ -15,7 +15,7 @@ if (isset($_GET['delid']) && ($_GET['delid'] >= 0)) {
 if (isset($_POST['AddCart']) && ($_POST['AddCart'])) {
     $name = $_POST['ProName'];
     $cate = $_POST['CateName'];
-    $gender = $_POST['Gender'];
+    $sup = $_POST['SupName'];
     $price = $_POST['Price'];
     $img = $_POST['Img'];
     $qty = $_POST['Quantity'];
@@ -32,7 +32,7 @@ if (isset($_POST['AddCart']) && ($_POST['AddCart'])) {
     }
     
     if ($check == 0) {
-        $cartItem = [$name, $cate, $gender, $qty, $price, $img];
+        $cartItem = [$name, $cate, $sup, $qty, $price, $img];
         $_SESSION['cart'][] = $cartItem;
     }
 }
@@ -55,7 +55,7 @@ function Showcart()
                         <div class="col-md-3 col-lg-3 col-xl-3">
                             <p class="lead fw-normal mb-2">' . $_SESSION['cart'][$i][0] . '</p>
                             <p><span class="text-muted">Category: </span>' . $_SESSION['cart'][$i][1] . '</p>
-                            <p><span class="text-muted">Gender: </span>' . $_SESSION['cart'][$i][2] . '</p>
+                            <p><span class="text-muted">Supplier: </span>' . $_SESSION['cart'][$i][2] . '</p>
                         </div>
                         <div class="col-md-3 col-lg-3 col-xl-2 d-flex">
                             <p><span class="text-muted">Quantity: </span>' . $_SESSION['cart'][$i][3] . '</p>

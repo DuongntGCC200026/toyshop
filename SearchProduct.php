@@ -1,24 +1,33 @@
 <div class="container mt-5">
     <div class="row">
         <div class="col-sm-3">
-            <h3>PRODUCTS</h3>
+            <h3 class=" mt-5">SUPPLIERS</h3>
             <div class="list-group list-group-flush">
-                <a href="index.php" class="list-group-item list-group-item-action py-2">All</a>
-                <a href="?page=SearchProduct&&gender=man" class="list-group-item list-group-item-action py-2">MAN</a>
-                <a href="?page=SearchProduct&&gender=woman" class="list-group-item list-group-item-action py-2">WOMAN</a>
+                <a href="index.php" class="list-group-item list-group-item-action py-2">ALL</a>
+                <?php
+                $res = pg_query($conn, "SELECT * FROM public.supplier");
+                if (!$res) {
+                    die("Invalid query:  " . pg_errormessage($conn));
+                }
+                while ($row = pg_fetch_array($res)) {
+                ?>
+                    <a href="?page=SearchProduct&&sup_id=<?php echo $row['sup_id'] ?>" class="list-group-item list-group-item-action py-2 text-uppercase"><?php echo $row['sup_name']; ?></a>
+                <?php
+                }
+                ?>
             </div>
             <hr class="d-sm-none">
 
             <h3 class="mt-5">CATEGORIES</h3>
             <div class="list-group list-group-flush">
                 <?php
-                $res = mysqli_query($conn, "SELECT * FROM category");
+                $res = pg_query($conn, "SELECT * FROM public.category");
                 if (!$res) {
-                    die("Invalid query:  " . mysqli_error($conn));
+                    die("Invalid query:  " . pg_errormessage($conn));
                 }
-                while ($row = mysqli_fetch_array($res, MYSQLI_ASSOC)) {
+                while ($row = pg_fetch_array($res)) {
                 ?>
-                    <a href="?page=SearchProduct&&id=<?php echo $row['CategoryID'] ?>" class="list-group-item list-group-item-action py-2"><?php echo $row['CategoryName']; ?></a>
+                    <a href="?page=SearchProduct&&cate_id=<?php echo $row['cate_id'] ?>" class="list-group-item list-group-item-action py-2 text-uppercase"><?php echo $row['cate_name']; ?></a>
                 <?php
                 }
                 ?>
@@ -28,26 +37,35 @@
         <div class="col-sm-9">
             <div class="row">
                 <?php
-                if (isset(($_GET['id']))) {
-                    $id = $_GET['id'];
+                if (isset(($_GET['sup_id']))) {
+                    $id = $_GET['sup_id'];
                     $No = 1;
-                    $res = mysqli_query($conn, "SELECT * FROM product WHERE CategoryID = '$id'");
+                    $res = pg_query($conn, "SELECT * FROM product a, supplier b, category d
+                                                    WHERE a.sup_id = '$id' AND a.sup_id = b.sup_id AND a.cate_id = d.cate_id");
                     if (!$res) {
-                        die("Invalid query:  " . mysqli_error($conn));
+                        die("Invalid query:  " . pg_errormessage($conn));
                     }
-                    while ($row = mysqli_fetch_array($res, MYSQLI_ASSOC)) {
-                        if ($No <= 6) {
+                    while ($row = pg_fetch_array($res)) {
+                        if ($No <= 18) {
                 ?>
                             <div class="col-sm-4 mt-5 mb-5">
                                 <div class='container-fluid'>
                                     <div class=" mx-auto col-md-6 col-10" id="card">
-                                        <img class='mx-auto' id="img-thumbnail" src="Images/<?php echo $row['Image'] ?>" width="200px" height="250px" />
+                                        <img class='mx-auto' id="img-thumbnail" src="Images/<?php echo $row['img'] ?>" width="200px" height="250px" />
                                         <div class=" text-center mx-auto" id="card-body">
                                             <div class='cvp'>
-                                                <h5 class="card-title font-weight-bold mt-3"><?php echo $row['ProductName'] ?></h5>
-                                                <p class="card-text"><?php echo $row['Price'] ?>$</p>
-                                                <a href="?page=ViewPro&&id=<?php echo $row['ProductID']; ?>" class="btn px-auto" id="details"><i class="bi bi-eye"></i> view details</a><br />
-                                                <a href="?page=PersonalCart&&id=<?php echo $row['ProductID'] ?>" class="btn px-auto" id="cart"><i class="bi bi-cart-check"></i> ADD TO CART</a>
+                                                <h5 class="card-title font-weight-bold mt-3 text-uppercase"><?php echo $row['pro_name'] ?></h5>
+                                                <p class="card-text"><?php echo $row['price'] ?>$</p>
+                                                <a href="?page=ViewPro&&id=<?php echo $row['pro_id']; ?>" class="btn px-auto" id="details"><i class="bi bi-eye"></i> view details</a><br />
+                                                <form action="?page=PersonalCart" method="POST">
+                                                    <input type="hidden" name="Quantity" value="1">
+                                                    <input class="btn px-auto" id="cart" type="submit" name="AddCart" value="ADD TO CART">
+                                                    <input type="hidden" name="ProName" value="<?php echo $row['pro_name'] ?>">
+                                                    <input type="hidden" name="CateName" value="<?php echo $row['cate_name'] ?>">
+                                                    <input type="hidden" name="SupName" value="<?php echo $row['sup_name'] ?>">
+                                                    <input type="hidden" name="Price" value="<?php echo $row['price'] ?>">
+                                                    <input type="hidden" name="Img" value="<?php echo $row['img'] ?>">
+                                                </form>
                                             </div>
                                         </div>
                                     </div>
@@ -60,26 +78,35 @@
                 }
                 ?>
                 <?php
-                if (isset(($_GET['gender']))) {
-                    $gender = $_GET['gender'];
+                if (isset(($_GET['cate_id']))) {
+                    $id = $_GET['cate_id'];
                     $No = 1;
-                    $res = mysqli_query($conn, "SELECT * FROM product WHERE SmallDes = '$gender'");
+                    $res = pg_query($conn, "SELECT * FROM product a, supplier b, category d
+                                                            WHERE a.cate_id = '$id' AND a.sup_id = b.sup_id AND a.cate_id = d.cate_id");
                     if (!$res) {
-                        die("Invalid query:  " . mysqli_error($conn));
+                        die("Invalid query:  " . pg_errormessage($conn));
                     }
-                    while ($row = mysqli_fetch_array($res, MYSQLI_ASSOC)) {
-                        if ($No <= 6) {
+                    while ($row = pg_fetch_array($res)) {
+                        if ($No <= 18) {
                 ?>
                             <div class="col-sm-4 mt-5 mb-5">
                                 <div class='container-fluid'>
                                     <div class=" mx-auto col-md-6 col-10" id="card">
-                                        <img class='mx-auto' id="img-thumbnail" src="Images/<?php echo $row['Image'] ?>" width="200px" height="250px" />
+                                        <img class='mx-auto' id="img-thumbnail" src="Images/<?php echo $row['img'] ?>" width="200px" height="250px" />
                                         <div class=" text-center mx-auto" id="card-body">
                                             <div class='cvp'>
-                                                <h5 class="card-title font-weight-bold mt-3"><?php echo $row['ProductName'] ?></h5>
-                                                <p class="card-text"><?php echo $row['Price'] ?>$</p>
-                                                <a href="?page=ViewPro&&id=<?php echo $row['ProductID']; ?>" class="btn px-auto" id="details"><i class="bi bi-eye"></i> view details</a><br />
-                                                <a href="?page=PersonalCart&&id=<?php echo $row['ProductID'] ?>" class="btn px-auto" id="cart"><i class="bi bi-cart-check"></i> ADD TO CART</a>
+                                                <h5 class="card-title font-weight-bold mt-3 text-uppercase"><?php echo $row['pro_name'] ?></h5>
+                                                <p class="card-text"><?php echo $row['price'] ?>$</p>
+                                                <a href="?page=ViewPro&&id=<?php echo $row['pro_id']; ?>" class="btn px-auto" id="details"><i class="bi bi-eye"></i> view details</a><br />
+                                                <form action="?page=PersonalCart" method="POST">
+                                                    <input type="hidden" name="Quantity" value="1">
+                                                    <input class="btn px-auto" id="cart" type="submit" name="AddCart" value="ADD TO CART">
+                                                    <input type="hidden" name="ProName" value="<?php echo $row['pro_name'] ?>">
+                                                    <input type="hidden" name="CateName" value="<?php echo $row['cate_name'] ?>">
+                                                    <input type="hidden" name="SupName" value="<?php echo $row['sup_name'] ?>">
+                                                    <input type="hidden" name="Price" value="<?php echo $row['price'] ?>">
+                                                    <input type="hidden" name="Img" value="<?php echo $row['img'] ?>">
+                                                </form>
                                             </div>
                                         </div>
                                     </div>

@@ -34,7 +34,7 @@ if (isset($_POST['btnLogin'])) {
     echo $err;
   } else {
     include_once("Connection.php");
-    $pass = $pa;
+    $pass = md5($pa);
     $res = pg_query($conn, "SELECT * FROM public.customer WHERE username = '$us' AND password = '$pass'") or die(pg_errormessage($conn));
     if (pg_num_rows($res) == 1) {
       $row = pg_fetch_array($res,PGSQL_ASSOC);
