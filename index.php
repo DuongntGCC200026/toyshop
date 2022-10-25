@@ -199,7 +199,7 @@
                             while ($row = pg_fetch_array($res)) {
                             ?>
                                 <p>
-                                    <a href="?page=SearchProduct&&id=<?php echo $row['cate_id'] ?>" class="text-reset"><?php echo $row['cate_name']; ?></a>
+                                    <a href="?page=SearchProduct&&cate_id=<?php echo $row['cate_id'] ?>" class="text-reset"><?php echo $row['cate_name']; ?></a>
                                 </p>
                             <?php
                             }
