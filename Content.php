@@ -16,9 +16,9 @@
                 }
                 ?>
             </div>
-            <hr class="d-sm-none">
+            <hr class="d-sm-none">  
 
-            <h3 class="mt-5">CATEGORIES</h3>
+            <h3 class="mt-5">CATEGORIES</h3>  
             <div class="list-group list-group-flush">
                 <?php
                 $res = pg_query($conn, "SELECT * FROM public.category");
